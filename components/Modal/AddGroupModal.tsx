@@ -56,12 +56,12 @@ export function AddGroupModal({
   }, [fillieres]);
 
   const onSave = async () => {
-    setIsLoading(true);
     if (!name) return setError("Nom du groupe est requis");
     if (!description) return setError("Description du groupe est requis");
     if (!level) return setError("Niveau du groupe est requis");
     if (!selectedDepartmentId) return setError("Department est requis");
     if (!selectedfilliereId) return setError("filliere est requis");
+    setIsLoading(true);
     try {
       if (selectedGroup)
         updateGroup({

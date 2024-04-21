@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Delete, Eye, Trash, Trash2, View } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/components/Modal/Modal";
 import { formatCamelCase } from "@/lib/format";
 import { Id } from "@/convex/_generated/dataModel";
@@ -108,6 +108,14 @@ type ViewModalProps = {
 };
 
 function ViewModal({ setIsViewModalOpen, selectedItem }: ViewModalProps) {
+  const fieldsToNotShow = [
+    "_id",
+    "type",
+    "pictureUrl",
+    "tokenIdentifier",
+    "user",
+    "group",
+  ];
   const filliereGroups = useQuery(api.groups.getFilliereGroups, {
     filliereId: selectedItem.filliereId,
   });
@@ -120,14 +128,9 @@ function ViewModal({ setIsViewModalOpen, selectedItem }: ViewModalProps) {
   const [selectedGroupId, setSelectedGroup] = useState<Id<"groups"> | null>(
     group?._id || null,
   );
-  const fieldsToNotShow = [
-    "_id",
-    "type",
-    "pictureUrl",
-    "tokenIdentifier",
-    "user",
-    "group",
-  ];
+  useEffect(() => {
+    setSelectedGroup(group?._id || null);
+  }, [group]);
 
   const onSave = () => {
     if (selectedGroupId && selectedItem._id) {

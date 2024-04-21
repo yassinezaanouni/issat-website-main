@@ -151,3 +151,72 @@ export const updateGroup = mutation({
     });
   },
 });
+
+export const createFilliere = mutation({
+  args: {
+    name: v.string(),
+    description: v.string(),
+    department: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Called getUser without authentication present");
+    }
+
+    // get user
+    const user = await getUser(ctx, identity.tokenIdentifier);
+    if (user.type !== "admin")
+      throw new ConvexError("You are not allowed to create a filliere");
+
+    return await ctx.db.insert("fillieres", {
+      name: args.name,
+      description: args.description,
+      department: args.department,
+    });
+  },
+});
+
+export const updateFilliere = mutation({
+  args: {
+    id: v.id("fillieres"),
+    name: v.string(),
+    description: v.string(),
+    department: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Called getUser without authentication present");
+    }
+
+    // get user
+    const user = await getUser(ctx, identity.tokenIdentifier);
+    if (user.type !== "admin")
+      throw new ConvexError("You are not allowed to update a filliere");
+
+    return await ctx.db.patch(args.id, {
+      name: args.name,
+      description: args.description,
+      department: args.department,
+    });
+  },
+});
+export const deleteFilliere = mutation({
+  args: {
+    id: v.id("fillieres"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Called getUser without authentication present");
+    }
+
+    // get user
+    const user = await getUser(ctx, identity.tokenIdentifier);
+    if (user.type !== "admin")
+      throw new ConvexError("You are not allowed to delete a filliere");
+
+    return await ctx.db.delete(args.id);
+  },
+});

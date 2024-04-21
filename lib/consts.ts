@@ -13,9 +13,21 @@ export const NAV_ITEMS = [
     access: ["admin", "teacher"],
   },
   {
+    title: "Fillieres",
+    href: "/fillieres",
+    icon: "Book",
+    access: ["admin", "teacher"],
+  },
+  {
     title: "Etudiants",
     href: "/students",
     icon: "User",
     access: ["admin"],
+  },
+  {
+    title: "Salles",
+    href: "/rooms",
+    icon: "Home",
+    access: ["admin", "teacher"],
   },
 ];
