@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Group, Plus, Trash2 } from "lucide-react";
+import { Eye, Group, Pen, Plus, Trash2 } from "lucide-react";
 import { AddGroupModal } from "@/components/Modal/AddGroupModal";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery } from "convex/react";
@@ -64,24 +64,49 @@ function GroupCard({ group }: Props) {
     groupId: group._id,
   });
   const onDeleteGroupMutation = useMutation(api.groups.deleteGroup);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onDeleteGroup = (id: Id<"groups">) => {
     let text = "Voulez-vous vraiment supprimer ce groupe ?";
     if (confirm(text)) onDeleteGroupMutation({ id });
   };
   return (
-    <Link href={`/groups/${group._id}`} key={group._id}>
-      <Card className="w-60 cursor-pointer transition-all hover:scale-[1.02]">
+    <>
+      {isModalOpen && (
+        <AddGroupModal
+          selectedGroup={group}
+          setIsAddGroupModalOpen={setIsModalOpen}
+          title="Modifier Groupe"
+        />
+      )}
+      <Card className="w-[18rem] ">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center justify-between text-base">
             <div>{group.name}</div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onDeleteGroup(group._id)}
-            >
-              <Trash2 className="text-destructive" size={14} />
-            </Button>
+            <div className="flex items-center">
+              <Button size="sm" variant="ghost">
+                <Link href={`/groups/${group._id}`} key={group._id}>
+                  <Eye size={14} />
+                </Link>
+              </Button>
+
+              <Button size="sm" variant="ghost">
+                <Pen
+                  size={14}
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                />
+              </Button>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onDeleteGroup(group._id)}
+              >
+                <Trash2 className="text-destructive" size={14} />
+              </Button>
+            </div>
           </CardTitle>
           <CardDescription className="text-xs capitalize">
             {filliere?.name}
@@ -96,6 +121,6 @@ function GroupCard({ group }: Props) {
           </div>
         </CardContent>
       </Card>
-    </Link>
+    </>
   );
 }

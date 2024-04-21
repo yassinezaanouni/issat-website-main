@@ -169,10 +169,11 @@ function ViewModal({ setIsViewModalOpen, selectedItem }: ViewModalProps) {
           </span>
           <span className="text-sm">
             <Select
+              value={selectedGroupId ? selectedGroupId : undefined}
               onValueChange={(value: Id<"groups">) => setSelectedGroup(value)}
             >
               <SelectTrigger className="">
-                <SelectValue placeholder={group?.name || "Groupes"} />
+                <SelectValue placeholder={"Groupes"} />
               </SelectTrigger>
               <SelectContent>
                 {filliereGroups.map((group) => (

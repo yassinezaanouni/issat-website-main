@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "../ui/use-toast";
@@ -25,20 +25,35 @@ import { toast } from "../ui/use-toast";
 type ModalProps = {
   title: string;
   setIsAddGroupModalOpen: (value: boolean) => void;
+  selectedGroup?: any;
 };
-export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
+export function AddGroupModal({
+  title,
+  setIsAddGroupModalOpen,
+  selectedGroup,
+}: ModalProps) {
   const createGroup = useMutation(api.groups.createGroup);
+  const updateGroup = useMutation(api.groups.updateGroup);
   const departments = useQuery(api.groups.getDepartments);
   const fillieres = useQuery(api.groups.getfillieres);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [level, setLevel] = useState(1);
-
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
-  const [selectedfilliereId, setSelectedfilliereId] = useState("");
+  const [name, setName] = useState(selectedGroup?.name);
+  const [description, setDescription] = useState(selectedGroup?.description);
+  const [level, setLevel] = useState(selectedGroup?.level);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(
+    fillieres?.find((q) => q._id == selectedGroup?.filliereId)?.department,
+  );
+  const [selectedfilliereId, setSelectedfilliereId] = useState(
+    selectedGroup?.filliereId,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setSelectedDepartmentId(
+      fillieres?.find((q) => q._id == selectedGroup?.filliereId)?.department,
+    );
+  }, [fillieres]);
 
   const onSave = async () => {
     setIsLoading(true);
@@ -48,12 +63,21 @@ export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
     if (!selectedDepartmentId) return setError("Department est requis");
     if (!selectedfilliereId) return setError("filliere est requis");
     try {
-      await createGroup({
-        name,
-        description,
-        level,
-        filliereId: selectedfilliereId,
-      });
+      if (selectedGroup)
+        updateGroup({
+          id: selectedGroup._id,
+          name,
+          description,
+          level,
+          filliereId: selectedfilliereId,
+        });
+      else
+        await createGroup({
+          name,
+          description,
+          level,
+          filliereId: selectedfilliereId,
+        });
       setError("");
       toast({
         title: "Groupe ajouté",
@@ -79,21 +103,27 @@ export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
       isLoading={isLoading}
     >
       <Input
+        value={name}
         placeholder="Nom du groupe"
         onChange={(e) => setName(e.target.value)}
       />
 
       <Input
+        value={description}
         placeholder="Description du groupe"
         onChange={(e) => setDescription(e.target.value)}
       />
       <Input
+        value={level}
         type="number"
         placeholder="Niveau"
         onChange={(e) => setLevel(parseInt(e.target.value))}
         max={9}
       />
-      <Select onValueChange={(value) => setSelectedDepartmentId(value)}>
+      <Select
+        value={selectedDepartmentId}
+        onValueChange={(value) => setSelectedDepartmentId(value)}
+      >
         <SelectTrigger className="">
           <SelectValue placeholder="Departments" />
         </SelectTrigger>
@@ -108,7 +138,10 @@ export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
 
       {/* filliere */}
       {selectedDepartmentId && (
-        <Select onValueChange={(value) => setSelectedfilliereId(value)}>
+        <Select
+          value={selectedfilliereId}
+          onValueChange={(value) => setSelectedfilliereId(value)}
+        >
           <SelectTrigger className="">
             <SelectValue placeholder="fillieres" />
           </SelectTrigger>
