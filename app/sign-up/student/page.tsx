@@ -24,7 +24,9 @@ import UseGetMe from "@/app/hooks/UseGetMe";
 
 function page() {
   const createStudent = useMutation(api.users.createStudent);
-  const groups = useQuery(api.groups.getGroups);
+  const departments = useQuery(api.groups.getDepartments);
+  const fillieres = useQuery(api.groups.getfillieres);
+  // const groups = useQuery(api.groups.getGroups);
   const { user } = UseGetMe();
 
   const router = useRouter();
@@ -33,7 +35,10 @@ function page() {
   const [gender, setGender] = React.useState<string>("");
   const [address, setAddress] = React.useState<string>("");
   const [phone, setPhone] = React.useState<string>("");
-  const [selectedGroupId, setSelectedGroupId] = React.useState<string>("");
+  const [selectedDepartmentId, setSelectedDepartmentId] =
+    React.useState<string>("");
+  const [selectedfilliereId, setSelectedfilliereId] =
+    React.useState<string>("");
   const [city, setCity] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
 
@@ -46,7 +51,7 @@ function page() {
       return setError("Veuillez entrer un numéro de téléphone valide");
     if (!gender) return setError("Veuillez entrer votre genre");
     if (!birthDate) return setError("Veuillez entrer votre date de naissance");
-    if (!selectedGroupId) return setError("Veuillez choisir un groupe");
+    if (!selectedDepartmentId) return setError("Veuillez choisir un groupe");
     setError("");
     try {
       await createStudent({
@@ -55,7 +60,8 @@ function page() {
         gender,
         birthDate: birthDate.toISOString(),
         city,
-        group: selectedGroupId,
+        departmentId: selectedDepartmentId,
+        filliereId: selectedfilliereId,
       });
       toast({
         title: "Succès",
@@ -144,25 +150,44 @@ function page() {
             />
 
             <div className="w-full min-w-[10rem] max-w-[45%]">
-              <Select onValueChange={(value) => setSelectedGroupId(value)}>
+              <Select onValueChange={(value) => setSelectedDepartmentId(value)}>
                 <SelectTrigger className="">
-                  <SelectValue placeholder="Groupes" />
+                  <SelectValue placeholder="Departements" />
                 </SelectTrigger>
                 <SelectContent>
-                  {groups?.map((group) => (
-                    <SelectItem key={group._id} value={group._id}>
-                      {group.name}
+                  {departments?.map((department) => (
+                    <SelectItem key={department._id} value={department._id}>
+                      {department.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className=" flex flex-col items-center justify-center gap-6">
-              {<p className="text-sm text-red-500">{error}</p>}
-              <Button className="w-40 max-w-full rounded-md bg-primary py-4 text-background">
-                S'inscrire
-              </Button>
+            <div className="w-full min-w-[10rem] max-w-[45%]">
+              {/* filliere */}
+              {selectedDepartmentId && (
+                <Select onValueChange={(value) => setSelectedfilliereId(value)}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Fillieres" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fillieres
+                      ?.filter((q) => q.department === selectedDepartmentId)
+                      .map((filliere) => (
+                        <SelectItem key={filliere._id} value={filliere._id}>
+                          {filliere.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
+          </div>
+          <div className=" flex flex-1 flex-col items-center justify-center gap-6 ">
+            {<p className="text-sm text-red-500">{error}</p>}
+            <Button className="w-40 max-w-full rounded-md bg-primary py-4 text-background">
+              S'inscrire
+            </Button>
           </div>
         </form>
       )}

@@ -29,14 +29,14 @@ type ModalProps = {
 export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
   const createGroup = useMutation(api.groups.createGroup);
   const departments = useQuery(api.groups.getDepartments);
-  const filieres = useQuery(api.groups.getFilieres);
+  const fillieres = useQuery(api.groups.getfillieres);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [level, setLevel] = useState(1);
 
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
-  const [selectedFiliereId, setSelectedFiliereId] = useState("");
+  const [selectedfilliereId, setSelectedfilliereId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,13 +46,13 @@ export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
     if (!description) return setError("Description du groupe est requis");
     if (!level) return setError("Niveau du groupe est requis");
     if (!selectedDepartmentId) return setError("Department est requis");
-    if (!selectedFiliereId) return setError("Filiere est requis");
+    if (!selectedfilliereId) return setError("filliere est requis");
     try {
       await createGroup({
         name,
         description,
         level,
-        filiereId: selectedFiliereId,
+        filliereId: selectedfilliereId,
       });
       setError("");
       toast({
@@ -106,18 +106,18 @@ export function AddGroupModal({ title, setIsAddGroupModalOpen }: ModalProps) {
         </SelectContent>
       </Select>
 
-      {/* Filiere */}
+      {/* filliere */}
       {selectedDepartmentId && (
-        <Select onValueChange={(value) => setSelectedFiliereId(value)}>
+        <Select onValueChange={(value) => setSelectedfilliereId(value)}>
           <SelectTrigger className="">
-            <SelectValue placeholder="Filieres" />
+            <SelectValue placeholder="fillieres" />
           </SelectTrigger>
           <SelectContent>
-            {filieres
+            {fillieres
               ?.filter((q) => q.department === selectedDepartmentId)
-              .map((filiere) => (
-                <SelectItem key={filiere._id} value={filiere._id}>
-                  {filiere.name}
+              .map((filliere) => (
+                <SelectItem key={filliere._id} value={filliere._id}>
+                  {filliere.name}
                 </SelectItem>
               ))}
           </SelectContent>

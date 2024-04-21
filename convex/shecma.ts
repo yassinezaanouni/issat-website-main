@@ -25,14 +25,14 @@ export default defineSchema({
     description: v.string(),
     name: v.string(),
   }),
-  filieres: defineTable({
+  fillieres: defineTable({
     department: v.id("departments"),
     description: v.string(),
     name: v.string(),
   }),
   groups: defineTable({
     description: v.string(),
-    filiereId: v.id("filieres"),
+    filliereId: v.id("fillieres"),
     level: v.float64(),
     name: v.string(),
   }),
@@ -41,7 +41,9 @@ export default defineSchema({
     birthDate: v.string(),
     city: v.string(),
     gender: v.string(),
-    group: v.id("groups"),
+    departmentId: v.id("departments"),
+    filliereId: v.id("fillieres"),
+    groupId: v.id("groups"),
     phone: v.string(),
     user: v.id("users"),
   }),

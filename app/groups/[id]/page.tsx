@@ -19,6 +19,7 @@ import { useState } from "react";
 import Modal from "@/components/Modal/Modal";
 import { formatCamelCase } from "@/lib/format";
 import { Id } from "@/convex/_generated/dataModel";
+import StudentsTable from "@/components/students/StudentsTable";
 
 export default function page({ params }: { params: { id: string } }) {
   const students = useQuery(api.users.getStudentsGroup, {
@@ -35,63 +36,7 @@ export default function page({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      {students == undefined ? (
-        <Spinner />
-      ) : students.length > 0 ? (
-        <Table>
-          <TableCaption>
-            A list of your recent students in this group.
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Ordre</TableHead>
-              <TableHead className="w-[100px]">Id</TableHead>
-              <TableHead>Nom Complet</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {students.map((student, index) => (
-              <TableRow key={student.student}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell className="font-medium">{student._id}</TableCell>
-                <TableCell>{student.fullName}</TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell className="flex items-center">
-                  <Button
-                    className=""
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedStudent(student);
-                      setIsViewModalOpen(true);
-                    }}
-                  >
-                    <Eye size={20} />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => onDeleteStudent(student._id, student.user)}
-                  >
-                    <Trash2 className="text-destructive" size={20} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      ) : (
-        <span>Pas d'étudiants</span>
-      )}
-
-      {isViewModalOpen && (
-        <ViewModal
-          setIsViewModalOpen={setIsViewModalOpen}
-          selectedItem={selectedStudent}
-        />
-      )}
+      <StudentsTable students={students} />
     </div>
   );
 }

@@ -99,7 +99,8 @@ export const createStudent = mutation({
     gender: v.string(),
     birthDate: v.string(),
     city: v.string(),
-    group: v.string(),
+    departmentId: v.string(),
+    filliereId: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -124,7 +125,8 @@ export const createStudent = mutation({
         address: args.address,
         phone: args.phone,
         city: args.city,
-        group: args.group,
+        departmentId: args.departmentId,
+        filliereId: args.filliereId,
       });
     }
     throw new ConvexError("Student already exists");
@@ -138,13 +140,35 @@ export const getStudentsGroup = query({
   handler: async (ctx, args) => {
     const students = await ctx.db
       .query("students")
-      .filter((q) => q.eq(q.field("group"), args.groupId))
+      .filter((q) => q.eq(q.field("groupId"), args.groupId))
       .collect();
     const users: any[] = [];
     await Promise.all(
       students.map(async (student) => {
         const user = await ctx.db.get(student.user);
         users.push({ ...user, ...student });
+      }),
+    );
+    return users;
+  },
+});
+
+export const getAllStudents = query({
+  async handler(ctx) {
+    const students = await ctx.db.query("students").collect();
+    const users: any[] = [];
+    await Promise.all(
+      students.map(async (student) => {
+        const user = await ctx.db.get(student.user);
+        const filliereName = await ctx.db.get(student.filliereId);
+        const departmentName = await ctx.db.get(student.departmentId);
+
+        users.push({
+          ...user,
+          ...student,
+          filliereName: filliereName.name,
+          departmentName: departmentName.name,
+        });
       }),
     );
     return users;

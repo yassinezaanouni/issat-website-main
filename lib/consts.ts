@@ -12,4 +12,10 @@ export const NAV_ITEMS = [
     icon: "Users",
     access: ["admin", "teacher"],
   },
+  {
+    title: "Etudiants",
+    href: "/students",
+    icon: "User",
+    access: ["admin"],
+  },
 ];

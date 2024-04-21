@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Group, Plus } from "lucide-react";
+import { Group, Plus, Trash2 } from "lucide-react";
 import { AddGroupModal } from "@/components/Modal/AddGroupModal";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
   CardTitle,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
+import { Id } from "@/convex/_generated/dataModel";
 function page() {
   const groups = useQuery(api.groups.getGroups);
   const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
@@ -30,26 +31,7 @@ function page() {
         {groups == undefined ? (
           <Spinner />
         ) : groups.length > 0 ? (
-          groups?.map((group) => (
-            <Link href={`/groups/${group._id}`}>
-              <Card className="w-60 cursor-pointer transition-all hover:scale-[1.02]">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base">{group.name}</CardTitle>
-                  <CardDescription className="text-xs">
-                    {group.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center space-x-2">
-                    <Group className="h-4 w-4 opacity-70" />
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      Niveau {group.level}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))
+          groups?.map((group) => <GroupCard group={group} key={group._id} />)
         ) : (
           <span>Pas de groupes</span>
         )}
@@ -67,3 +49,53 @@ function page() {
 }
 
 export default page;
+
+type Props = {
+  group: {
+    _id: Id<"groups">;
+    name: string;
+    description: string;
+    level: number;
+  };
+};
+
+function GroupCard({ group }: Props) {
+  const filliere = useQuery(api.groups.getFilliereByGroup, {
+    groupId: group._id,
+  });
+  const onDeleteGroupMutation = useMutation(api.groups.deleteGroup);
+
+  const onDeleteGroup = (id: Id<"groups">) => {
+    let text = "Voulez-vous vraiment supprimer ce groupe ?";
+    if (confirm(text)) onDeleteGroupMutation({ id });
+  };
+  return (
+    <Link href={`/groups/${group._id}`} key={group._id}>
+      <Card className="w-60 cursor-pointer transition-all hover:scale-[1.02]">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div>{group.name}</div>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onDeleteGroup(group._id)}
+            >
+              <Trash2 className="text-destructive" size={14} />
+            </Button>
+          </CardTitle>
+          <CardDescription className="text-xs capitalize">
+            {filliere?.name}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2">
+            <Group className="h-4 w-4 opacity-70" />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Niveau {group.level}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
