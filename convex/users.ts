@@ -23,6 +23,21 @@ export const store = mutation({
     }
     // Check if we've already stored this identity before.
     const user = await getUser(ctx, identity.tokenIdentifier);
+
+    const userByEmail = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email))
+      .unique();
+
+    if (userByEmail && !userByEmail?.tokenIdentifier) {
+      return await ctx.db.patch(userByEmail._id, {
+        fullName: identity.name!,
+        tokenIdentifier: identity.tokenIdentifier,
+        pictureUrl: identity.pictureUrl,
+        email: identity.email,
+      });
+    }
+
     if (!user) {
       // If it's a new identity, create a new `User`.
       return await ctx.db.insert("users", {
@@ -60,6 +75,12 @@ export async function getUser(ctx: any, tokenIdentifier: string) {
   return user;
 }
 
+export const getUsers = query({
+  async handler(ctx) {
+    return await ctx.db.query("users").collect();
+  },
+});
+
 export const getMe = query({
   async handler(ctx, args) {
     if (args.isLoading) return;
@@ -82,7 +103,7 @@ export const getMe = query({
 
 export const deleteUser = mutation({
   args: {
-    idTable1: v.id("students") || v.id("teachers"),
+    idTable1: v.id("students") && v.id("profs"),
     idTable2: v.id("users"),
   },
   handler: async (ctx, args) => {

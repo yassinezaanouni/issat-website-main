@@ -1,22 +1,24 @@
+export const PROF_TYPES = ["prof", "chefProf"];
+
 export const NAV_ITEMS = [
   // use lucide-react
   {
     title: "Dashboard",
     href: "/",
     icon: "Home",
-    access: ["admin", "teacher", "student"],
+    access: ["admin", "prof", "student"],
   },
   {
     title: "Groupes",
     href: "/groups",
     icon: "Users",
-    access: ["admin", "teacher"],
+    access: ["admin", "prof"],
   },
   {
     title: "Fillieres",
     href: "/fillieres",
     icon: "Book",
-    access: ["admin", "teacher"],
+    access: ["admin", "prof"],
   },
   {
     title: "Etudiants",
@@ -25,9 +27,15 @@ export const NAV_ITEMS = [
     access: ["admin"],
   },
   {
+    title: "Profs",
+    href: "/profs",
+    icon: "User",
+    access: ["admin"],
+  },
+  {
     title: "Salles",
     href: "/rooms",
     icon: "Home",
-    access: ["admin", "teacher"],
+    access: ["admin", "prof"],
   },
 ];

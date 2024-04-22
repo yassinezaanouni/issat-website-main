@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const roles = v.union(
   v.literal("student"),
-  v.literal("teacher"),
+  v.literal("prof"),
   v.literal("admin"),
 );
 
