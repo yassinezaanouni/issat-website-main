@@ -6,21 +6,10 @@ import ProfsTable from "./compoments/ProfsTable";
 
 function page() {
   const profs = useQuery(api.profs.getProfs);
-  const users = useQuery(api.users.getUsers);
-
-  const profsUsers = profs?.map((prof) => {
-    const user = users?.find((user) => user._id === prof.user);
-
-    return {
-      ...prof,
-      email: user?.email,
-      fullName: user?.fullName,
-    };
-  });
 
   return (
     <div>
-      <ProfsTable profs={profsUsers} />
+      <ProfsTable profs={profs} />
     </div>
   );
 }

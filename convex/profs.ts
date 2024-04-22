@@ -63,7 +63,18 @@ export const updateProf = mutation({
 
 export const getProfs = query({
   handler: async (ctx) => {
-    return await ctx.db.query("profs").order("desc").collect();
+    // mix prof with user with the same id
+    const profs = await ctx.db.query("profs").collect();
+    const users = await ctx.db.query("users").collect();
+    return profs.map((prof) => {
+      const user = users.find((user) => user._id === prof.user);
+
+      return {
+        ...prof,
+        email: user.email,
+        fullName: user.fullName,
+      };
+    });
   },
 });
 
@@ -72,9 +83,12 @@ export const getProf = query({
     id: v.id("profs"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("profs")
-      .filter((q) => q.eq(q.field("id"), args.id))
-      .unique();
+    const prof = await ctx.db.get(args.id);
+    const user = await ctx.db.get(prof.user);
+    return {
+      ...prof,
+      email: user.email,
+      fullName: user.fullName,
+    };
   },
 });
