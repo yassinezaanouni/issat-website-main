@@ -97,3 +97,21 @@ export const getMatiere = query({
       .unique();
   },
 });
+
+export const getProfMatieresWithUserId = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  async handler(ctx, args) {
+    if (!args?.userId) return undefined;
+    const prof = await ctx.db
+      .query("profs")
+      .filter((q) => q.eq(q.field("user"), args.userId))
+      .unique();
+
+    return await ctx.db
+      .query("matieres")
+      .filter((q) => q.eq(q.field("profId"), prof._id))
+      .collect();
+  },
+});
