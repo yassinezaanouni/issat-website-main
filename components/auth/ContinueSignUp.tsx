@@ -21,7 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import Datepicker from "react-tailwindcss-datepicker";
 import UseGetMe from "@/app/hooks/UseGetMe";
-
+ 
 function ContinueSignUp() {
   const createStudent = useMutation(api.users.createStudent);
   const departments = useQuery(api.groups.getDepartments);
