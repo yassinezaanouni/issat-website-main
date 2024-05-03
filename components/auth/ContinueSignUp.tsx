@@ -28,6 +28,7 @@ function ContinueSignUp() {
   const fillieres = useQuery(api.groups.getfillieres);
   // const groups = useQuery(api.groups.getGroups);
   const { user } = UseGetMe();
+  //hello from amna
 
   const router = useRouter();
   const { toast } = useToast();
