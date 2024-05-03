@@ -53,7 +53,7 @@ export default function StudentsTable({ students }: Props) {
               <TableHead className="w-[100px]">Ordre</TableHead>
               <TableHead className="w-[100px]">Id</TableHead>
               <TableHead>Votre Nom</TableHead>
-              <TableHead>Vites Email</TableHead>
+              <TableHead>Votre Email</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
