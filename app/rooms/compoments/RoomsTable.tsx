@@ -58,7 +58,7 @@ export default function RoomsTable({ rooms }: Props) {
         <Spinner />
       ) : rooms.length > 0 ? (
         <Table>
-          <TableCaption>Une liste des rooms.</TableCaption>
+          <TableCaption>La liste des salles.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>

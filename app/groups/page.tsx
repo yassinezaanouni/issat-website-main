@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 function page() {
   const groups = useQuery(api.groups.getGroups);
+  console.log(groups);
   const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
   return (
     <section className="h-full">
@@ -26,7 +27,7 @@ function page() {
           setIsAddGroupModalOpen={setIsAddGroupModalOpen}
         />
       )}
-      <h1 className=" text-lg font-semibold uppercase">Listes des groupes:</h1>
+      <h1 className="mb-10 text-2xl font-bold ">Liste des groupes </h1>
       <div className="mt-4 flex flex-wrap gap-x-10 gap-y-6">
         {groups == undefined ? (
           <Spinner />

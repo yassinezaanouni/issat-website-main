@@ -62,7 +62,7 @@ export default function MatieresTable({ items }: Props) {
         <Spinner />
       ) : items.length > 0 ? (
         <Table>
-          <TableCaption>Une liste des cours.</TableCaption>
+          <TableCaption>La liste des cours.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>

@@ -43,11 +43,13 @@ export default function StudentsTable({ students }: Props) {
 
   return (
     <div>
+      <h1 className="mb-10 text-2xl font-bold ">Liste des etudiants </h1>
+
       {students == undefined ? (
         <Spinner />
       ) : students.length > 0 ? (
         <Table>
-          <TableCaption>Une liste des students.</TableCaption>
+          <TableCaption>La liste des students.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>
