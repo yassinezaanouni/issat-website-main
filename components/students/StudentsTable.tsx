@@ -47,7 +47,7 @@ export default function StudentsTable({ students }: Props) {
         <Spinner />
       ) : students.length > 0 ? (
         <Table>
-          <TableCaption>A list of students.</TableCaption>
+          <TableCaption>Une liste des students.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>

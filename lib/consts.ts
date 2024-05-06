@@ -36,12 +36,24 @@ export const NAV_ITEMS = [
     title: "Matieres",
     href: "/matieres",
     icon: "Book",
-    access: ["admin", "chefProf"],
+    access: ["admin", "chefProf", "prof"],
   },
   {
     title: "Salles",
     href: "/rooms",
     icon: "Home",
     access: ["admin"],
+  },
+  {
+    title: "Cours",
+    href: "/courses",
+    icon: "Book",
+    access: ["admin", "chefProf", "prof"],
+  },
+  {
+    title: "Emplois",
+    href: "/timeTables",
+    icon: "Calendar",
+    access: ["admin", "chefProf", "prof", "student"],
   },
 ];

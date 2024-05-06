@@ -59,7 +59,7 @@ export default function ProfsTable({ profs }: Props) {
         <Spinner />
       ) : profs.length > 0 ? (
         <Table>
-          <TableCaption>A list of profs.</TableCaption>
+          <TableCaption>Une liste des profs.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>

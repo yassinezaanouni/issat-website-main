@@ -35,26 +35,26 @@ type Props = {
 };
 export default function MatieresTable({ items }: Props) {
   const { user } = UseGetMe();
-  const deleteMatiere = useMutation(api.matieres.deleteMatiere);
+  const deleteCourse = useMutation(api.courses.deleteCourse);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const onDeleteMatiere = (matiereId: Id<"matieres">, userId: Id<"users">) => {
+  const onDeleteCourse = (matiereId: Id<"courses">, userId: Id<"users">) => {
     let text = "Voulez-vous vraiment supprimer cet matiere ?";
-    if (confirm(text)) deleteMatiere({ id: matiereId });
+    if (confirm(text)) deleteCourse({ id: matiereId });
   };
 
   return (
     <div>
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Liste des matieres</h1>
+        <h1 className="text-2xl font-bold">Liste des cours</h1>
         {user?.type == "admin" && (
           <Button
             onClick={() => setIsViewModalOpen(true)}
             className="  flex items-center gap-2 rounded-md px-6 py-3"
           >
             <Plus />
-            <span>Ajouter un matiere</span>
+            <span>Ajouter un cours</span>
           </Button>
         )}
       </div>
@@ -62,7 +62,7 @@ export default function MatieresTable({ items }: Props) {
         <Spinner />
       ) : items.length > 0 ? (
         <Table>
-          <TableCaption>Une liste des matieres.</TableCaption>
+          <TableCaption>Une liste des cours.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Ordre</TableHead>
@@ -94,7 +94,7 @@ export default function MatieresTable({ items }: Props) {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => onDeleteMatiere(item._id, item.user)}
+                      onClick={() => onDeleteCourse(item._id, item.user)}
                     >
                       <Trash2 className="text-destructive" size={20} />
                     </Button>
@@ -124,33 +124,36 @@ type ViewModalProps = {
 };
 
 function ViewModal({ setIsViewModalOpen, selectedItem }: ViewModalProps) {
-  const profs = useQuery(api.profs.getProfs);
-  const addMatiere = useMutation(api.matieres.addMatiere);
-  const updateMatiere = useMutation(api.matieres.updateMatiere);
+  const matieres = useQuery(api.matieres.getMatieres);
+  const rooms = useQuery(api.rooms.getRooms);
+  const addCourse = useMutation(api.courses.addCourse);
+  const updateCourse = useMutation(api.courses.updateCourse);
   const [name, setName] = useState(selectedItem?.name);
   const [description, setDescription] = useState(selectedItem?.description);
-  const [profId, setProfId] = useState(selectedItem?.profId);
+  const [matiereId, setMatiereId] = useState(selectedItem?.matiereId);
+  const [roomId, setRoomId] = useState(selectedItem?.roomId);
 
   const onSave = () => {
-    if (!name || !description || !profId)
+    if (!name || !description || !matiereId || !roomId)
       return alert("Veuillez remplir tous les champs");
     const data = {
       name,
       description,
-      profId,
+      matiereId,
+      roomId,
     };
     if (selectedItem)
-      updateMatiere({
+      updateCourse({
         id: selectedItem._id,
         ...data,
       });
-    else addMatiere(data);
+    else addCourse(data);
 
     setIsViewModalOpen(false);
   };
   return (
     <Modal
-      title="Ajouter un matiere"
+      title="Ajouter un cours"
       setIsModalOpen={setIsViewModalOpen}
       onSave={onSave}
     >
@@ -177,20 +180,43 @@ function ViewModal({ setIsViewModalOpen, selectedItem }: ViewModalProps) {
 
       <div className="flex items-center justify-between">
         <span className="font-medium capitalize text-gray-500 dark:text-gray-400">
-          Prof:
+          Matiere:
         </span>
         <span className="text-sm">
           <Select
-            value={profId ? profId : undefined}
-            onValueChange={(value) => setProfId(value)}
+            value={matiereId ? matiereId : undefined}
+            onValueChange={(value) => setMatiereId(value)}
           >
             <SelectTrigger className="">
-              <SelectValue placeholder={"Selectionner le prof"} />
+              <SelectValue placeholder={"Selectionner un matiere"} />
             </SelectTrigger>
             <SelectContent>
-              {profs?.map((item, index) => (
+              {matieres?.map((item, index) => (
                 <SelectItem key={index} value={item._id}>
-                  {formatCamelCase(item.fullName)}
+                  {formatCamelCase(item.name)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <span className="font-medium capitalize text-gray-500 dark:text-gray-400">
+          Salle:
+        </span>
+        <span className="text-sm">
+          <Select
+            value={roomId ? roomId : undefined}
+            onValueChange={(value) => setRoomId(value)}
+          >
+            <SelectTrigger className="">
+              <SelectValue placeholder={"Selectionner la salle"} />
+            </SelectTrigger>
+            <SelectContent>
+              {rooms?.map((item, index) => (
+                <SelectItem key={index} value={item._id}>
+                  {formatCamelCase(item.name)}
                 </SelectItem>
               ))}
             </SelectContent>
