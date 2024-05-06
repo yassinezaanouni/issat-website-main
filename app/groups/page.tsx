@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, Group, Pen, Plus, Trash2 } from "lucide-react";
 import { AddGroupModal } from "@/components/Modal/AddGroupModal";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,23 @@ import {
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 function page() {
   const groups = useQuery(api.groups.getGroups);
-  console.log(groups);
+  const [filtredItems, setFiltredItems] = useState(groups);
+  const fillieres = useQuery(api.groups.getfillieres);
   const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
+
+  useEffect(() => {
+    setFiltredItems(groups);
+  }, [groups]);
+
   return (
     <section className="h-full">
       {isAddGroupModalOpen && (
@@ -28,11 +41,61 @@ function page() {
         />
       )}
       <h1 className="mb-10 text-2xl font-bold ">Liste des groupes </h1>
+      {/* filter by level using select */}
+      <div className="mb-6 flex items-center gap-6">
+        <span className="w-40">
+          <Select
+            onValueChange={(value) => {
+              if (value === "all") setFiltredItems(groups);
+              else
+                setFiltredItems(
+                  groups?.filter((group) => group.filliereId == value),
+                );
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Filière" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Filière</SelectItem>
+              {fillieres?.map((filliere) => (
+                <SelectItem key={filliere._id} value={filliere._id}>
+                  {filliere.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </span>
+        <span className="w-40">
+          <Select
+            onValueChange={(value) => {
+              if (value === "all") setFiltredItems(groups);
+              else
+                setFiltredItems(
+                  groups?.filter((group) => group.level == parseInt(value)),
+                );
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Niveau" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Niveau</SelectItem>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="3">3</SelectItem>
+            </SelectContent>
+          </Select>
+        </span>
+      </div>
+
       <div className="mt-4 flex flex-wrap gap-x-10 gap-y-6">
         {groups == undefined ? (
           <Spinner />
         ) : groups.length > 0 ? (
-          groups?.map((group) => <GroupCard group={group} key={group._id} />)
+          filtredItems?.map((group) => (
+            <GroupCard group={group} key={group._id} />
+          ))
         ) : (
           <span>Pas de groupes</span>
         )}

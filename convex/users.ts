@@ -103,7 +103,7 @@ export const getMe = query({
 
 export const deleteUser = mutation({
   args: {
-    idTable1: v.id("students") && v.id("profs"),
+    idTable1: v.any(),
     idTable2: v.id("users"),
   },
   handler: async (ctx, args) => {

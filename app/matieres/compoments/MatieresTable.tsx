@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import UseGetMe from "@/app/hooks/UseGetMe";
+import SearchField from "@/components/SeachField";
 
 type Props = {
   items: any[] | undefined;
@@ -36,8 +37,13 @@ type Props = {
 export default function MatieresTable({ items }: Props) {
   const { user } = UseGetMe();
   const deleteMatiere = useMutation(api.matieres.deleteMatiere);
+  const [filteredItems, setFilteredItems] = useState(items);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    setFilteredItems(items);
+  }, [items]);
 
   const onDeleteMatiere = (matiereId: Id<"matieres">, userId: Id<"users">) => {
     let text = "Voulez-vous vraiment supprimer cet matiere ?";
@@ -58,9 +64,10 @@ export default function MatieresTable({ items }: Props) {
           </Button>
         )}
       </div>
-      {items == undefined ? (
+      <SearchField items={items} setFilteredItems={setFilteredItems} />
+      {filteredItems == undefined ? (
         <Spinner />
-      ) : items.length > 0 ? (
+      ) : filteredItems.length > 0 ? (
         <Table>
           <TableCaption>La liste des matieres.</TableCaption>
           <TableHeader>
@@ -72,7 +79,7 @@ export default function MatieresTable({ items }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item, index) => (
+            {filteredItems.map((item, index) => (
               <TableRow key={item._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell className="font-medium">{item._id}</TableCell>

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Delete, Eye, Plus, Trash, Trash2, View } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Modal from "@/components/Modal/Modal";
 import { formatCamelCase } from "@/lib/format";
 import { Id } from "@/convex/_generated/dataModel";
@@ -28,14 +28,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import SearchField from "@/components/SeachField";
 
 type Props = {
   rooms: any[] | undefined;
 };
 export default function RoomsTable({ rooms }: Props) {
   const deleteRoom = useMutation(api.rooms.deleteRoom);
+  const [filteredItems, setFilteredItems] = useState(rooms);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
+
+  useEffect(() => {
+    setFilteredItems(rooms);
+  }, [rooms]);
 
   const onDeleteRoom = (roomId: Id<"rooms">) => {
     let text = "Voulez-vous vraiment supprimer cet étudiant ?";
@@ -54,9 +60,11 @@ export default function RoomsTable({ rooms }: Props) {
           <span>Ajouter une salle</span>
         </Button>
       </div>
-      {rooms == undefined ? (
+      <SearchField items={rooms} setFilteredItems={setFilteredItems} />
+
+      {filteredItems == undefined ? (
         <Spinner />
-      ) : rooms.length > 0 ? (
+      ) : filteredItems.length > 0 ? (
         <Table>
           <TableCaption>La liste des salles.</TableCaption>
           <TableHeader>
@@ -68,7 +76,7 @@ export default function RoomsTable({ rooms }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rooms.map((room, index) => (
+            {filteredItems.map((room, index) => (
               <TableRow key={room._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell className="font-medium">{room._id}</TableCell>

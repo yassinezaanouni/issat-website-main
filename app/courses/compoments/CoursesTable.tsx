@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import UseGetMe from "@/app/hooks/UseGetMe";
+import SearchField from "@/components/SeachField";
 
 type Props = {
   items: any[] | undefined;
@@ -36,8 +37,13 @@ type Props = {
 export default function MatieresTable({ items }: Props) {
   const { user } = UseGetMe();
   const deleteCourse = useMutation(api.courses.deleteCourse);
+  const [filteredItems, setFilteredItems] = useState(items);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    setFilteredItems(items);
+  }, [items]);
 
   const onDeleteCourse = (matiereId: Id<"courses">, userId: Id<"users">) => {
     let text = "Voulez-vous vraiment supprimer cet matiere ?";
@@ -48,6 +54,7 @@ export default function MatieresTable({ items }: Props) {
     <div>
       <div className="mb-10 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Liste des cours</h1>
+
         {user?.type == "admin" && (
           <Button
             onClick={() => setIsViewModalOpen(true)}
@@ -58,9 +65,11 @@ export default function MatieresTable({ items }: Props) {
           </Button>
         )}
       </div>
-      {items == undefined ? (
+      <SearchField items={items} setFilteredItems={setFilteredItems} />
+
+      {filteredItems == undefined ? (
         <Spinner />
-      ) : items.length > 0 ? (
+      ) : filteredItems.length > 0 ? (
         <Table>
           <TableCaption>La liste des cours.</TableCaption>
           <TableHeader>
@@ -72,7 +81,7 @@ export default function MatieresTable({ items }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item, index) => (
+            {filteredItems.map((item, index) => (
               <TableRow key={item._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell className="font-medium">{item._id}</TableCell>

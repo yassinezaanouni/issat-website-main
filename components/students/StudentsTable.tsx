@@ -27,14 +27,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SearchField from "../SeachField";
 
 type Props = {
   students: any[] | undefined;
 };
 export default function StudentsTable({ students }: Props) {
   const deleteStudent = useMutation(api.users.deleteUser);
+  const [filteredItems, setFilteredItems] = useState(students);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+
+  useEffect(() => {
+    setFilteredItems(students);
+  }, [students]);
 
   const onDeleteStudent = (idTable1: Id<"students">, idTable2: Id<"users">) => {
     let text = "Voulez-vous vraiment supprimer cet étudiant ?";
@@ -44,10 +50,15 @@ export default function StudentsTable({ students }: Props) {
   return (
     <div>
       <h1 className="mb-10 text-2xl font-bold ">Liste des etudiants </h1>
+      <SearchField
+        items={students}
+        setFilteredItems={setFilteredItems}
+        attr="fullName"
+      />
 
-      {students == undefined ? (
+      {filteredItems == undefined ? (
         <Spinner />
-      ) : students.length > 0 ? (
+      ) : filteredItems.length > 0 ? (
         <Table>
           <TableCaption>La liste des students.</TableCaption>
           <TableHeader>
@@ -60,7 +71,7 @@ export default function StudentsTable({ students }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {students.map((student, index) => (
+            {filteredItems.map((student, index) => (
               <TableRow key={student._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell className="font-medium">{student._id}</TableCell>

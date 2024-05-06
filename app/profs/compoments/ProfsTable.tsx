@@ -29,14 +29,20 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { PROF_TYPES } from "@/lib/consts";
+import SearchField from "@/components/SeachField";
 
 type Props = {
   profs: any[] | undefined;
 };
 export default function ProfsTable({ profs }: Props) {
   const deleteProf = useMutation(api.users.deleteUser);
+  const [filteredItems, setFilteredItems] = useState(profs);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    setFilteredItems(profs);
+  }, [profs]);
 
   const onDeleteProf = (profId: Id<"profs">, userId: Id<"users">) => {
     let text = "Voulez-vous vraiment supprimer cet prof ?";
@@ -47,6 +53,7 @@ export default function ProfsTable({ profs }: Props) {
     <div>
       <div className="mb-10 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Liste des profs</h1>
+
         <Button
           onClick={() => setIsViewModalOpen(true)}
           className="  flex items-center gap-2 rounded-md px-6 py-3"
@@ -55,9 +62,14 @@ export default function ProfsTable({ profs }: Props) {
           <span>Ajouter un prof</span>
         </Button>
       </div>
-      {profs == undefined ? (
+      <SearchField
+        items={profs}
+        setFilteredItems={setFilteredItems}
+        attr="fullName"
+      />
+      {filteredItems == undefined ? (
         <Spinner />
-      ) : profs.length > 0 ? (
+      ) : filteredItems.length > 0 ? (
         <Table>
           <TableCaption>La liste des profs.</TableCaption>
           <TableHeader>
@@ -69,7 +81,7 @@ export default function ProfsTable({ profs }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {profs.map((item, index) => (
+            {filteredItems.map((item, index) => (
               <TableRow key={item._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell className="font-medium">{item._id}</TableCell>

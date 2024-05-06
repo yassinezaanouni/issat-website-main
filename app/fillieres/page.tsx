@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, Group, Pen, Plus, Trash2 } from "lucide-react";
 import { AddFilliereModal } from "@/components/Modal/AddFilliereModal";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,22 @@ import {
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 function page() {
   const fillieres = useQuery(api.groups.getfillieres);
+  const departments = useQuery(api.groups.getDepartments);
   const [isAddFilliereModalOpen, setIsAddFilliereModalOpen] = useState(false);
+  const [filtredItems, setFiltredItems] = useState(fillieres);
+
+  useEffect(() => {
+    setFiltredItems(fillieres);
+  }, [fillieres]);
   return (
     <section className="h-full">
       {isAddFilliereModalOpen && (
@@ -28,11 +41,37 @@ function page() {
       )}
       <h1 className="mb-10 text-2xl font-bold ">Liste des Fillieres </h1>
 
+      <div className="mb-6 flex items-center gap-6">
+        <span className="w-40">
+          <Select
+            onValueChange={(value) => {
+              if (value === "all") setFiltredItems(fillieres);
+              else
+                setFiltredItems(
+                  fillieres?.filter((item) => item.department == value),
+                );
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all"> Department</SelectItem>
+              {departments?.map((item) => (
+                <SelectItem key={item._id} value={item._id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </span>
+      </div>
+
       <div className="mt-4 flex flex-wrap gap-x-10 gap-y-6">
-        {fillieres == undefined ? (
+        {filtredItems == undefined ? (
           <Spinner />
-        ) : fillieres.length > 0 ? (
-          fillieres?.map((filliere) => (
+        ) : filtredItems.length > 0 ? (
+          filtredItems?.map((filliere) => (
             <FilliereCard filliere={filliere} key={filliere._id} />
           ))
         ) : (
