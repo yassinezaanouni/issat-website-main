@@ -24,15 +24,23 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/Modal/Modal";
+import UseGetMe from "../hooks/UseGetMe";
 
 const WEEK_DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 const HOURS = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00"];
 
 function page() {
+  const { user } = UseGetMe();
   const groups = useQuery(api.groups.getGroups);
   const [selectedGroupId, setSelectedGroupId] = useState<
     Id<"groups"> | undefined
   >();
+  const getMyGroup = useQuery(api.groups.getMyGroup);
+  useEffect(() => {
+    if (user?.type === "student") {
+      setSelectedGroupId(getMyGroup?._id);
+    }
+  }, [user]);
 
   if (groups == undefined) return <Spinner />;
 
@@ -41,33 +49,48 @@ function page() {
       <div className="mb-10 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Emplois du temps</h1>
 
-        <span>
-          <Select
-            value={selectedGroupId || undefined}
-            onValueChange={(value: any) => setSelectedGroupId(value)}
-          >
-            <SelectTrigger className="">
-              <SelectValue placeholder={"Selectionner le groupe"} />
-            </SelectTrigger>
-            <SelectContent>
-              {groups.map((item, index) => (
-                <SelectItem key={index} value={item._id}>
-                  {formatCamelCase(item.name)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </span>
+        {(user?.type == "admin" ||
+          user?.type == "prof" ||
+          user?.type == "chefProf") && (
+          <span>
+            <Select
+              value={selectedGroupId || undefined}
+              onValueChange={(value: any) => setSelectedGroupId(value)}
+            >
+              <SelectTrigger className="">
+                <SelectValue placeholder={"Selectionner le groupe"} />
+              </SelectTrigger>
+              <SelectContent>
+                {groups.map((item, index) => (
+                  <SelectItem key={index} value={item._id}>
+                    {formatCamelCase(item.name)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </span>
+        )}
       </div>
 
-      {selectedGroupId && <TimeTable selectedGroupId={selectedGroupId} />}
+      {selectedGroupId && (
+        <TimeTable
+          selectedGroupId={selectedGroupId}
+          isStudent={user?.type === "student"}
+        />
+      )}
     </div>
   );
 }
 
 export default page;
 
-function TimeTable({ selectedGroupId }: { selectedGroupId: Id<"groups"> }) {
+function TimeTable({
+  selectedGroupId,
+  isStudent,
+}: {
+  selectedGroupId: Id<"groups">;
+  isStudent: boolean;
+}) {
   const getCreateTimeTable = useMutation(api.timetables.getGroupTimeTable);
   const [timeTable, setTimeTable] = useState<any>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -108,6 +131,7 @@ function TimeTable({ selectedGroupId }: { selectedGroupId: Id<"groups"> }) {
                       number={number}
                       isModalOpen={isModalOpen}
                       setIsModalOpen={setIsModalOpen}
+                      isStudent={isStudent}
                     />
                   </TableCell>
                 );
@@ -125,11 +149,13 @@ function AddTimeTableItem({
   number,
   isModalOpen,
   setIsModalOpen,
+  isStudent,
 }: {
   item: any;
   number: number;
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;
+  isStudent: boolean;
 }) {
   const courses = useQuery(api.courses.getCoursesPopulate);
   const addTimeTableItem = useMutation(api.timetables.addTimeTableItem);
@@ -150,7 +176,7 @@ function AddTimeTableItem({
             setIsModalOpen(true);
           }}
           className="w-full p-12"
-          variant={item?.courses?.[number] ? "outline" : "default"}
+          variant={item?.courses?.[number] || isStudent ? "outline" : "default"}
         >
           {item?.courses?.[number]?.name ? (
             <div className="flex  flex-col items-center gap-2 ">
@@ -158,9 +184,9 @@ function AddTimeTableItem({
               <p className="">Salle {item?.courses?.[number]?.room.name}</p>
               <p className="mt-2 font-semibold">Yassine Zaanouni</p>
             </div>
-          ) : (
-            "+"
-          )}
+          ) : !isStudent ? (
+            <p>+</p>
+          ) : null}
         </Button>
       </div>
 

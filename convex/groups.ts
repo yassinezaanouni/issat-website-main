@@ -220,3 +220,21 @@ export const deleteFilliere = mutation({
     return await ctx.db.delete(args.id);
   },
 });
+
+export const getMyGroup = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const user = await getUser(ctx, identity.tokenIdentifier);
+    if (user.type !== "student") return null;
+    const student = await ctx.db
+      .query("students")
+      .filter((q) => q.eq(q.field("user"), user._id))
+      .unique();
+    if (!student) return null;
+    return await ctx.db.get(student.groupId);
+  },
+});

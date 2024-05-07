@@ -14,6 +14,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as actualites from "../actualites.js";
 import type * as courses from "../courses.js";
 import type * as groups from "../groups.js";
 import type * as matieres from "../matieres.js";
@@ -32,6 +33,7 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  actualites: typeof actualites;
   courses: typeof courses;
   groups: typeof groups;
   matieres: typeof matieres;

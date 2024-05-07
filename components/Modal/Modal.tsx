@@ -16,6 +16,7 @@ type ModalProps = {
   children: React.ReactNode;
   onSave: () => void;
   isLoading?: boolean;
+  className?: string;
 };
 function Modal({
   title,
@@ -23,6 +24,7 @@ function Modal({
   children,
   onSave,
   isLoading,
+  className = "w-[min(90%,36rem)]",
 }: ModalProps) {
   return (
     <div className="absolute inset-0 isolate z-50 flex items-center justify-center">
@@ -31,7 +33,7 @@ function Modal({
         onClick={() => setIsModalOpen(false)}
       />
 
-      <Card className="w-[min(90%,36rem)]">
+      <Card className={className}>
         <CardHeader>
           <CardTitle>{title}</CardTitle>
         </CardHeader>
